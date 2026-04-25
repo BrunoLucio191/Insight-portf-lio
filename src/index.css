@@ -1,0 +1,29 @@
+:root {
+  --color-bg: #121212;
+  --color-surface: #242424;
+  --color-primary: #ffcc00;
+  --color-text: #f3f3f3;
+  --color-text-dark: #121212;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: "Inter", Helvetica, Arial, sans-serif;
+  line-height: 1.6;
+  background: linear-gradient(135deg, #fdf1b8, #f5d142);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  min-height: 50rem;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
