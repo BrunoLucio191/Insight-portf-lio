@@ -12,16 +12,17 @@ function FloatingWhatsApp() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Falar no WhatsApp"
-      className="fixed bottom-5 right-5 z-40 group"
+      className="fixed bottom-6 right-6 z-40 group flex items-center justify-center"
     >
       <span
         aria-hidden="true"
-        className="absolute inset-0 rounded-full bg-[#25D366] animate-ping opacity-30"
+        className="absolute inset-0 rounded-full bg-[var(--color-amber)] animate-ping opacity-20"
+        style={{ animationDuration: '3s' }}
       />
-      <span className="relative flex items-center justify-center w-14 h-14 rounded-full bg-[#25D366] text-white shadow-[0_10px_30px_-5px_rgba(37,211,102,0.6)] hover:scale-110 transition-transform">
-        <MessageCircle size={26} fill="currentColor" />
+      <span className="relative flex items-center justify-center w-14 h-14 rounded-full bg-[var(--color-amber)] text-black shadow-[var(--shadow-glow-amber)] hover:scale-110 transition-transform duration-300">
+        <MessageCircle size={26} strokeWidth={2.5} />
       </span>
-      <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-1.5 rounded-md bg-black text-white text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none hidden sm:block">
+      <span className="absolute right-full mr-4 top-1/2 -translate-y-1/2 px-3.5 py-2 rounded-lg glass text-[var(--color-text)] text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none hidden lg:block whitespace-nowrap shadow-[var(--shadow-soft)]">
         Fale conosco
       </span>
     </motion.a>

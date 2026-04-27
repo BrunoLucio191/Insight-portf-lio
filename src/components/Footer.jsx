@@ -5,17 +5,15 @@ import { CONTACT, NAV } from "../lib/data";
 
 function Footer() {
   return (
-    <footer className="border-t border-[var(--color-line)] bg-[var(--color-bg-soft)]">
-      <div className="mx-auto max-w-7xl px-5 sm:px-8 py-14">
-        <div className="grid md:grid-cols-3 gap-10">
+    <footer className="relative bg-[var(--color-bg-soft)] overflow-hidden">
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[var(--color-amber)]/30 to-transparent" />
+      <div className="mx-auto max-w-7xl px-5 sm:px-8 py-16 sm:py-20">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-16">
           <div>
             <img src={logo} alt="Insight Engenharia Júnior" className="h-10 w-auto mb-4" />
-            <p className="text-sm text-[var(--color-text-muted)] leading-relaxed max-w-sm">
+            <p className="text-sm text-[var(--color-text-muted)] leading-relaxed max-w-sm mt-4">
               Empresa Júnior de Engenharia Elétrica da Universidade Federal do Maranhão.
-              Excelência em seus projetos.
-            </p>
-            <p className="mt-4 text-xs font-mono text-[var(--color-text-dim)]">
-              Vinculada ao DEE — UFMA · Federada ao MEJ
+              Transformando teoria em projetos de excelência.
             </p>
           </div>
 
@@ -68,13 +66,17 @@ function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 pt-6 border-t border-[var(--color-line)] flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
-          <p className="text-xs text-[var(--color-text-dim)]">
+        <div className="mt-16 pt-8 border-t border-[var(--color-line)] flex flex-col md:flex-row gap-4 items-center justify-between">
+          <p className="text-xs text-[var(--color-text-dim)] text-center md:text-left">
             © {new Date().getFullYear()} Insight Engenharia Júnior · Todos os direitos reservados.
           </p>
-          <p className="text-xs font-mono text-[var(--color-text-dim)]">
-            São Luís — MA · UFMA
-          </p>
+          <div className="flex items-center gap-4 text-xs font-mono text-[var(--color-text-dim)]">
+            <span>São Luís — MA</span>
+            <span className="w-1 h-1 rounded-full bg-[var(--color-line-strong)]" />
+            <span>Vinculada ao DEE/UFMA</span>
+            <span className="w-1 h-1 rounded-full bg-[var(--color-line-strong)]" />
+            <span>Federada ao MEJ</span>
+          </div>
         </div>
       </div>
     </footer>

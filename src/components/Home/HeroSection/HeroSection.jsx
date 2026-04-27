@@ -1,6 +1,10 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Zap, ShieldCheck, Award, Building2 } from "lucide-react";
 import { fadeUp, stagger } from "../../../lib/motion";
+import { useStore } from "../../../lib/store";
+import { STATS } from "../../../lib/data";
+import AnimatedCounter from "../../AnimatedCounter";
+import HeroCarousel from "./HeroCarousel";
 
 const TRUST = [
   { icon: Building2, label: "Vinculada à UFMA" },
@@ -10,25 +14,44 @@ const TRUST = [
 
 function AnimatedGrid() {
   return (
-    <svg
-      aria-hidden="true"
-      className="absolute inset-0 w-full h-full opacity-[0.18] pointer-events-none"
-      preserveAspectRatio="xMidYMid slice"
-    >
-      <defs>
-        <pattern id="hero-grid" width="56" height="56" patternUnits="userSpaceOnUse">
-          <path d="M 56 0 L 0 0 0 56" fill="none" stroke="rgba(255,201,31,0.35)" strokeWidth="0.6" />
-        </pattern>
-        <radialGradient id="hero-fade" cx="50%" cy="40%" r="60%">
-          <stop offset="0%" stopColor="white" stopOpacity="1" />
-          <stop offset="100%" stopColor="white" stopOpacity="0" />
-        </radialGradient>
-        <mask id="hero-mask">
-          <rect width="100%" height="100%" fill="url(#hero-fade)" />
-        </mask>
-      </defs>
-      <rect width="100%" height="100%" fill="url(#hero-grid)" mask="url(#hero-mask)" />
-    </svg>
+    <div aria-hidden="true" className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden bg-noise">
+      <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-bg)] via-[#111] to-[var(--color-bg)]" />
+      <motion.div
+        animate={{
+          scale: [1, 1.1, 1],
+          opacity: [0.3, 0.5, 0.3],
+          rotate: [0, 5, -5, 0],
+        }}
+        transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+        className="absolute -top-1/4 -right-1/4 w-[50rem] h-[50rem] rounded-full bg-[var(--color-amber)] blur-[120px] opacity-10 mix-blend-screen"
+      />
+      <motion.div
+        animate={{
+          scale: [1, 1.2, 1],
+          opacity: [0.2, 0.4, 0.2],
+        }}
+        transition={{ duration: 18, repeat: Infinity, ease: "linear", delay: 2 }}
+        className="absolute -bottom-1/4 -left-1/4 w-[40rem] h-[40rem] rounded-full bg-[#ff9900] blur-[150px] opacity-10 mix-blend-screen"
+      />
+      <svg
+        className="absolute inset-0 w-full h-full opacity-[0.18]"
+        preserveAspectRatio="xMidYMid slice"
+      >
+        <defs>
+          <pattern id="hero-grid" width="56" height="56" patternUnits="userSpaceOnUse">
+            <path d="M 56 0 L 0 0 0 56" fill="none" stroke="rgba(255,201,31,0.35)" strokeWidth="0.6" />
+          </pattern>
+          <radialGradient id="hero-fade" cx="50%" cy="40%" r="60%">
+            <stop offset="0%" stopColor="white" stopOpacity="1" />
+            <stop offset="100%" stopColor="white" stopOpacity="0" />
+          </radialGradient>
+          <mask id="hero-mask">
+            <rect width="100%" height="100%" fill="url(#hero-fade)" />
+          </mask>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#hero-grid)" mask="url(#hero-mask)" />
+      </svg>
+    </div>
   );
 }
 
@@ -55,6 +78,7 @@ function CircuitLine() {
 }
 
 function HeroSection() {
+  const { site } = useStore();
   return (
     <section
       id="inicio"
@@ -69,12 +93,12 @@ function HeroSection() {
         className="absolute top-1/4 -left-40 w-[28rem] h-[28rem] rounded-full bg-[var(--color-amber)] opacity-[0.07] blur-[120px] pointer-events-none"
       />
 
-      <div className="relative mx-auto max-w-7xl px-5 sm:px-8 w-full">
+      <div className="relative mx-auto max-w-7xl px-5 sm:px-8 w-full grid lg:grid-cols-[1.15fr_1fr] gap-10 lg:gap-12 items-center">
         <motion.div
           variants={stagger}
           initial="hidden"
           animate="show"
-          className="max-w-4xl"
+          className="max-w-2xl"
         >
           <motion.div
             variants={fadeUp}
@@ -82,28 +106,36 @@ function HeroSection() {
           >
             <Zap size={14} className="text-[var(--color-amber)]" aria-hidden="true" />
             <span className="font-mono text-xs tracking-wider uppercase text-[var(--color-amber)]">
-              Empresa Júnior · UFMA · desde 2017
+              {site.heroBadge}
             </span>
           </motion.div>
 
           <motion.h1
             variants={fadeUp}
-            className="font-display font-bold text-[clamp(2.25rem,7vw,5.5rem)] leading-[1.02] tracking-tight text-balance"
+            className="font-display font-bold text-[clamp(2.5rem,7vw,5.5rem)] leading-[1.05] tracking-[-0.04em] text-balance relative"
           >
+            <motion.sup 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 0.8, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.8, ease: "easeOut" }}
+              className="absolute -top-6 -left-2 text-[var(--color-amber)] text-sm tracking-widest font-mono"
+            >
+              01 / ENG
+            </motion.sup>
             Engenharia elétrica com{" "}
-            <span className="relative inline-block">
-              <span className="text-[var(--color-amber)]">precisão</span>
+            <span className="relative inline-block whitespace-nowrap">
+              <span className="text-[var(--color-amber)] drop-shadow-md">precisão</span>
               <svg
                 aria-hidden="true"
                 viewBox="0 0 200 12"
                 preserveAspectRatio="none"
-                className="absolute -bottom-1 left-0 w-full h-2"
+                className="absolute -bottom-1 left-0 w-full h-2 mix-blend-screen"
               >
                 <motion.path
                   d="M2 8 Q 50 2, 100 6 T 198 5"
                   fill="none"
                   stroke="#ffc91f"
-                  strokeWidth="2"
+                  strokeWidth="3"
                   strokeLinecap="round"
                   initial={{ pathLength: 0 }}
                   animate={{ pathLength: 1 }}
@@ -118,8 +150,7 @@ function HeroSection() {
             variants={fadeUp}
             className="mt-6 sm:mt-8 max-w-2xl text-lg sm:text-xl text-[var(--color-text-muted)] text-pretty leading-relaxed"
           >
-            Projetos elétricos, automação e eficiência energética com a qualidade técnica
-            da UFMA e o preço justo de uma empresa júnior.
+            {site.heroSubtitle}
           </motion.p>
 
           <motion.div variants={fadeUp} className="mt-8 sm:mt-10 flex flex-col sm:flex-row gap-3 sm:gap-4">
@@ -156,16 +187,46 @@ function HeroSection() {
               </li>
             ))}
           </motion.ul>
+
+          <motion.div variants={fadeUp} className="mt-10 grid grid-cols-2 gap-4 sm:hidden border-t border-[var(--color-line)] pt-8">
+            {STATS.slice(0, 2).map((s) => (
+              <div key={s.label}>
+                <div className="font-display font-bold text-3xl text-[var(--color-amber)] mb-1">
+                  <AnimatedCounter to={s.value} suffix={s.suffix} />
+                </div>
+                <div className="text-xs text-[var(--color-text-muted)] leading-tight">{s.label}</div>
+              </div>
+            ))}
+          </motion.div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+          className="hidden lg:block relative"
+        >
+          <motion.div 
+            animate={{ opacity: [0.15, 0.35, 0.15], scale: [0.9, 1.1, 0.9] }} 
+            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }} 
+            className="absolute -inset-10 rounded-full bg-[radial-gradient(circle_at_center,var(--color-amber),transparent_60%)] blur-2xl pointer-events-none" 
+          />
+          <HeroCarousel />
         </motion.div>
       </div>
 
       <a
         href="#sobreNos"
         aria-label="Rolar para próxima seção"
-        className="absolute bottom-6 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-2 text-[var(--color-text-dim)] hover:text-[var(--color-amber)] transition-colors"
+        className="absolute bottom-10 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-2 text-[var(--color-text-dim)] hover:text-[var(--color-amber)] transition-colors group z-10"
       >
-        <span className="font-mono text-[10px] uppercase tracking-[0.3em]">Scroll</span>
-        <span className="w-px h-8 bg-gradient-to-b from-[var(--color-amber)] to-transparent" />
+        <span className="font-mono text-[10px] uppercase tracking-[0.3em] opacity-60 group-hover:opacity-100 transition-opacity">Scroll</span>
+        <motion.div
+          animate={{ y: [0, 8, 0], opacity: [0.5, 1, 0.5] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <Zap size={22} className="text-[var(--color-amber)] drop-shadow-[0_0_8px_rgba(255,201,31,0.6)] group-hover:drop-shadow-[0_0_12px_rgba(255,201,31,0.9)] transition-all" />
+        </motion.div>
       </a>
     </section>
   );

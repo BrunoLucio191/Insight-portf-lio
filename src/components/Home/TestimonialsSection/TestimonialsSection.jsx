@@ -1,15 +1,10 @@
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Quote, ChevronLeft, ChevronRight } from "lucide-react";
 import { TESTIMONIALS } from "../../../lib/data";
 import { fadeUp, stagger } from "../../../lib/motion";
+import { motion } from "framer-motion";
 
 function TestimonialsSection() {
-  const [i, setI] = useState(0);
-  const total = TESTIMONIALS.length;
-  const next = () => setI((v) => (v + 1) % total);
-  const prev = () => setI((v) => (v - 1 + total) % total);
-  const t = TESTIMONIALS[i];
+  // Triplicar para o efeito marquee infinito funcionar sem pulos
+  const marqueeItems = [...TESTIMONIALS, ...TESTIMONIALS, ...TESTIMONIALS];
 
   return (
     <section
@@ -33,79 +28,48 @@ function TestimonialsSection() {
           </motion.h2>
         </motion.div>
 
-        <div
-          className="relative rounded-2xl bg-[var(--color-surface)] border border-[var(--color-line)] p-8 sm:p-12 overflow-hidden"
-          aria-roledescription="carrossel"
-          aria-live="polite"
-        >
-          <Quote
-            size={64}
-            aria-hidden="true"
-            className="absolute -top-2 -left-2 text-[var(--color-amber)]/10"
-          />
-
-          <AnimatePresence mode="wait">
-            <motion.blockquote
-              key={i}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.35 }}
-              className="relative"
-            >
-              <p className="font-display text-2xl sm:text-3xl leading-snug text-[var(--color-text)] text-balance">
-                “{t.quote}”
-              </p>
-              <footer className="mt-6 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-[var(--color-amber)]/15 border border-[var(--color-amber)]/30 flex items-center justify-center font-mono text-[var(--color-amber)] text-sm">
-                  {t.name[0]}
+        <div className="relative w-full overflow-hidden flex py-8" style={{ maskImage: "linear-gradient(to right, transparent, black 10%, black 90%, transparent)" }}>
+          <div className="flex gap-6 sm:gap-8 w-max animate-[marquee_40s_linear_infinite] hover:[animation-play-state:paused] pr-6 sm:pr-8">
+            <style>{`
+              @keyframes marquee {
+                0% { transform: translateX(0%); }
+                100% { transform: translateX(-33.333333%); }
+              }
+            `}</style>
+            {marqueeItems.map((t, idx) => (
+              <div
+                key={`${idx}`}
+                className="relative w-[320px] sm:w-[400px] shrink-0 p-8 sm:p-10 rounded-2xl glass hover:border-[var(--color-amber)]/30 hover:shadow-[var(--shadow-soft)] transition-all duration-300 group overflow-hidden flex flex-col"
+              >
+                <div 
+                  className="absolute -top-12 -left-8 text-[12rem] font-display text-transparent opacity-[0.15] group-hover:opacity-30 transition-opacity duration-500 pointer-events-none select-none" 
+                  style={{ WebkitTextStroke: "2px var(--color-amber)" }}
+                  aria-hidden="true"
+                >
+                  &rdquo;
                 </div>
-                <div>
-                  <div className="font-semibold text-[var(--color-text)]">{t.name}</div>
-                  <div className="text-sm text-[var(--color-text-muted)]">
-                    {t.role} — {t.company}
+                
+                <p className="relative z-10 font-display text-lg sm:text-xl leading-relaxed text-[var(--color-text)] text-pretty mb-10">
+                  “{t.quote}”
+                </p>
+
+                <footer className="mt-auto relative z-10 flex items-center gap-4 border-t border-[var(--color-line)] pt-5">
+                  <div className="w-12 h-12 rounded-full bg-[var(--color-surface)] border border-[var(--color-line)] flex items-center justify-center font-mono text-[var(--color-text-muted)] text-lg shadow-[var(--shadow-soft)] group-hover:bg-[var(--color-amber)] group-hover:text-black group-hover:border-[var(--color-amber)] transition-colors duration-300">
+                    {t.name[0]}
                   </div>
-                </div>
-              </footer>
-            </motion.blockquote>
-          </AnimatePresence>
-
-          <div className="mt-8 flex items-center justify-between">
-            <div className="flex gap-2" role="tablist" aria-label="Selecionar depoimento">
-              {TESTIMONIALS.map((_, idx) => (
-                <button
-                  key={idx}
-                  role="tab"
-                  aria-selected={i === idx}
-                  aria-label={`Depoimento ${idx + 1}`}
-                  onClick={() => setI(idx)}
-                  className={`h-2 rounded-full transition-all ${
-                    i === idx ? "w-8 bg-[var(--color-amber)]" : "w-2 bg-[var(--color-line)]"
-                  }`}
-                />
-              ))}
-            </div>
-            <div className="flex gap-2">
-              <button
-                onClick={prev}
-                aria-label="Depoimento anterior"
-                className="w-11 h-11 rounded-full border border-[var(--color-line)] hover:border-[var(--color-amber)] hover:text-[var(--color-amber)] transition-colors flex items-center justify-center"
-              >
-                <ChevronLeft size={18} />
-              </button>
-              <button
-                onClick={next}
-                aria-label="Próximo depoimento"
-                className="w-11 h-11 rounded-full border border-[var(--color-line)] hover:border-[var(--color-amber)] hover:text-[var(--color-amber)] transition-colors flex items-center justify-center"
-              >
-                <ChevronRight size={18} />
-              </button>
-            </div>
+                  <div>
+                    <div className="font-semibold text-[var(--color-text)] tracking-tight">{t.name}</div>
+                    <div className="text-xs font-mono text-[var(--color-text-muted)] uppercase tracking-wider mt-1">
+                      {t.role} · {t.company}
+                    </div>
+                  </div>
+                </footer>
+              </div>
+            ))}
           </div>
         </div>
 
-        <p className="mt-4 text-center text-xs text-[var(--color-text-dim)] font-mono">
-          {/* TODO: substituir por depoimentos reais conforme forem coletados */}
+        <p className="mt-12 text-center text-xs text-[var(--color-text-dim)] font-mono opacity-60">
           // depoimentos representativos — substituir por reais conforme forem coletados
         </p>
       </div>

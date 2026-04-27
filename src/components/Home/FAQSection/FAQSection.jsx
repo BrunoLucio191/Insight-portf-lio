@@ -1,16 +1,13 @@
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Plus } from "lucide-react";
 import { FAQ } from "../../../lib/data";
 import { fadeUp, stagger } from "../../../lib/motion";
 
 function FAQSection() {
-  const [open, setOpen] = useState(0);
-
   return (
     <section
       id="faq"
-      className="relative py-20 sm:py-28 border-t border-[var(--color-line)]"
+      className="relative py-20 sm:py-28 border-t border-[var(--color-line)] bg-[var(--color-bg-soft)]"
     >
       <div className="mx-auto max-w-4xl px-5 sm:px-8">
         <motion.div
@@ -24,7 +21,7 @@ function FAQSection() {
             variants={fadeUp}
             className="font-mono text-xs uppercase tracking-[0.2em] text-[var(--color-amber)]"
           >
-            // 06 — Perguntas frequentes
+            // 07 — Perguntas frequentes
           </motion.span>
           <motion.h2
             variants={fadeUp}
@@ -39,61 +36,41 @@ function FAQSection() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, margin: "-60px" }}
-          className="space-y-3"
+          className="space-y-4"
         >
-          {FAQ.map((item, i) => {
-            const isOpen = open === i;
-            const id = `faq-${i}`;
-            return (
-              <motion.div
-                key={item.q}
-                variants={fadeUp}
-                className="card-base rounded-xl overflow-hidden"
-              >
-                <h3>
-                  <button
-                    type="button"
-                    aria-expanded={isOpen}
-                    aria-controls={`${id}-panel`}
-                    id={`${id}-trigger`}
-                    onClick={() => setOpen(isOpen ? -1 : i)}
-                    className="w-full flex items-center justify-between gap-4 text-left p-5 sm:p-6 min-h-[64px] hover:bg-white/[0.02] transition-colors"
-                  >
-                    <span className="font-display font-semibold text-base sm:text-lg text-[var(--color-text)] text-pretty">
-                      {item.q}
-                    </span>
-                    <motion.span
-                      animate={{ rotate: isOpen ? 45 : 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="shrink-0 w-9 h-9 rounded-full bg-[var(--color-amber)]/10 border border-[var(--color-amber)]/30 flex items-center justify-center text-[var(--color-amber)]"
-                    >
-                      <Plus size={16} />
-                    </motion.span>
-                  </button>
-                </h3>
-                <AnimatePresence initial={false}>
-                  {isOpen && (
-                    <motion.div
-                      id={`${id}-panel`}
-                      role="region"
-                      aria-labelledby={`${id}-trigger`}
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-                      className="overflow-hidden"
-                    >
-                      <p className="px-5 sm:px-6 pb-5 sm:pb-6 text-[var(--color-text-muted)] leading-relaxed">
-                        {item.a}
-                      </p>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
-            );
-          })}
+          {FAQ.map((item, i) => (
+            <motion.details
+              key={item.q}
+              variants={fadeUp}
+              name="faq-accordion"
+              className="group card-base rounded-2xl border border-[var(--color-line)] hover:border-[var(--color-amber)]/40 transition-colors overflow-hidden open:bg-white/[0.02]"
+            >
+              <summary className="w-full flex items-center justify-between gap-4 text-left p-6 sm:p-7 cursor-pointer list-none [&::-webkit-details-marker]:hidden outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-amber)]">
+                <span className="font-display font-semibold text-lg text-[var(--color-text)] text-pretty pr-4 group-open:text-[var(--color-amber)] transition-colors">
+                  {item.q}
+                </span>
+                <span className="shrink-0 w-10 h-10 rounded-full bg-[var(--color-amber)]/10 border border-[var(--color-amber)]/30 flex items-center justify-center text-[var(--color-amber)] group-open:rotate-45 group-open:bg-[var(--color-amber)] group-open:text-black transition-all duration-300">
+                  <Plus size={18} />
+                </span>
+              </summary>
+              <div className="grid grid-rows-[0fr] group-open:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-out">
+                <div className="overflow-hidden">
+                  <p className="px-6 sm:px-7 pb-6 sm:pb-7 text-[var(--color-text-muted)] leading-relaxed animate-[fade-in-down_0.3s_ease-out]">
+                    {item.a}
+                  </p>
+                </div>
+              </div>
+            </motion.details>
+          ))}
         </motion.div>
       </div>
+      
+      <style dangerouslySetInnerHTML={{__html: `
+        @keyframes fade-in-down {
+          0% { opacity: 0; transform: translateY(-10px); }
+          100% { opacity: 1; transform: translateY(0); }
+        }
+      `}} />
     </section>
   );
 }

@@ -9,10 +9,12 @@ import FAQSection from "./FAQSection/FAQSection";
 import ContactSection from "./ContactSection/ContactSection";
 import Footer from "../Footer";
 import FloatingWhatsApp from "../FloatingWhatsApp";
+import AnnouncementBar from "../AnnouncementBar";
 
 function HomePage() {
   return (
     <>
+      <AnnouncementBar />
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[200] focus:px-4 focus:py-2 focus:bg-[var(--color-amber)] focus:text-black focus:rounded-md focus:font-bold"
