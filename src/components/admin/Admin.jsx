@@ -2,18 +2,23 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Lock, LogOut, Megaphone, FolderKanban, Wrench, Settings, Plus, Trash2, Save,
-  RotateCcw, Edit3, ExternalLink, Check, Image as ImageIcon, Upload, ImagePlus, CheckCircle2, ArrowUp, ArrowDown
+  RotateCcw, Edit3, ExternalLink, Check, Image as ImageIcon, Upload, ImagePlus,
+  CheckCircle2, ArrowUp, ArrowDown, Newspaper, Pin,
 } from "lucide-react";
 import { store, useStore, uid } from "../../lib/store";
 
 const TABS = [
-  { id: "avisos", label: "Avisos", icon: Megaphone },
-  { id: "projetos", label: "Projetos", icon: FolderKanban },
-  { id: "hero", label: "Hero Slides", icon: ImageIcon },
-  { id: "servicos", label: "Serviços", icon: Wrench },
-  { id: "site", label: "Site", icon: Settings },
+  { id: "avisos",    label: "Avisos",    icon: Megaphone },
+  { id: "projetos",  label: "Projetos",  icon: FolderKanban },
+  { id: "novidades", label: "Novidades", icon: Newspaper },
+  { id: "hero",      label: "Hero Slides", icon: ImageIcon },
+  { id: "servicos",  label: "Serviços",  icon: Wrench },
+  { id: "site",      label: "Site",      icon: Settings },
 ];
 
+// Converte um File para base64 (data URL) para salvar no localStorage sem servidor.
+// Limitação: imagens grandes aumentam muito o tamanho do localStorage (~5MB limite).
+// Se o site crescer, considerar subir imagens para um storage externo (S3, Cloudinary).
 function fileToDataURL(file) {
   return new Promise((resolve, reject) => {
     const r = new FileReader();
@@ -23,6 +28,8 @@ function fileToDataURL(file) {
   });
 }
 
+// Campo de imagem reutilizável: aceita URL externa ou upload local (base64).
+// Limite de 1.5MB por arquivo — para não explodir o localStorage.
 function ImageUpload({ value, onChange, label = "Imagem" }) {
   const onFile = async (e) => {
     const f = e.target.files?.[0];
@@ -371,6 +378,182 @@ function ServicosTab() {
   );
 }
 
+const NOVIDADE_TYPES = ["Novidade", "Campanha", "Promoção", "Evento"];
+
+// Aba do admin para gerenciar o mural de novidades/campanhas da seção home.
+function NovidadesTab() {
+  const state = useStore();
+  const novidades = state.novidades || [];
+  const [editing, setEditing] = useState(null);
+
+  const blank = () => ({
+    id: uid(),
+    type: "Novidade",
+    title: "",
+    body: "",
+    image: "",
+    cta: { label: "Saiba mais", href: "#contato" },
+    active: true,
+    pinned: false,
+    expiresAt: "",
+    createdAt: Date.now(),
+  });
+
+  const save = (item) => {
+    const exists = novidades.find((n) => n.id === item.id);
+    const next = exists
+      ? novidades.map((n) => (n.id === item.id ? item : n))
+      : [item, ...novidades];
+    store.set({ ...state, novidades: next });
+    setEditing(null);
+  };
+
+  const remove = (id) => {
+    if (!confirm("Remover esta novidade?")) return;
+    store.set({ ...state, novidades: novidades.filter((n) => n.id !== id) });
+  };
+
+  const toggle = (id, key) => {
+    store.set({
+      ...state,
+      novidades: novidades.map((n) => n.id === id ? { ...n, [key]: !n[key] } : n),
+    });
+  };
+
+  return (
+    <div className="space-y-5">
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-[var(--color-text-muted)]">{novidades.length} novidades</p>
+        <button
+          onClick={() => setEditing(blank())}
+          className="inline-flex items-center gap-2 min-h-[44px] px-5 rounded-lg bg-[var(--color-amber)] text-black font-bold hover:bg-[var(--color-amber-soft)]"
+        >
+          <Plus size={16} /> Nova
+        </button>
+      </div>
+
+      {editing && (
+        <div className="p-5 rounded-xl bg-[var(--color-surface)] border border-[var(--color-amber)]/40 space-y-3">
+          <h3 className="font-display font-semibold text-lg">
+            {novidades.find((n) => n.id === editing.id) ? "Editar" : "Nova"} novidade
+          </h3>
+
+          <div className="grid sm:grid-cols-2 gap-3">
+            <Field label="Tipo">
+              <select className={inputCls} value={editing.type} onChange={(e) => setEditing({ ...editing, type: e.target.value })}>
+                {NOVIDADE_TYPES.map((t) => <option key={t}>{t}</option>)}
+              </select>
+            </Field>
+            <Field label="Título">
+              <input className={inputCls} value={editing.title} onChange={(e) => setEditing({ ...editing, title: e.target.value })} />
+            </Field>
+            <div className="sm:col-span-2">
+              <Field label="Texto">
+                <textarea rows={3} className={`${inputCls} py-3`} value={editing.body} onChange={(e) => setEditing({ ...editing, body: e.target.value })} />
+              </Field>
+            </div>
+            <Field label="Label do botão (CTA)">
+              <input className={inputCls} value={editing.cta?.label || ""} onChange={(e) => setEditing({ ...editing, cta: { ...editing.cta, label: e.target.value } })} placeholder="ex: Saiba mais" />
+            </Field>
+            <Field label="Link do botão">
+              <input className={inputCls} value={editing.cta?.href || ""} onChange={(e) => setEditing({ ...editing, cta: { ...editing.cta, href: e.target.value } })} placeholder="#contato" />
+            </Field>
+            {/* Expiração: deixar vazio = sem expiração automática */}
+            <Field label="Expira em (opcional)">
+              <input type="date" className={inputCls} value={editing.expiresAt ? editing.expiresAt.slice(0, 10) : ""} onChange={(e) => setEditing({ ...editing, expiresAt: e.target.value || null })} />
+            </Field>
+            <div className="flex items-center gap-6 pt-6">
+              <label className="flex items-center gap-2 text-sm cursor-pointer">
+                <input type="checkbox" checked={editing.active} onChange={(e) => setEditing({ ...editing, active: e.target.checked })} className="w-4 h-4 accent-[var(--color-amber)]" />
+                Ativo
+              </label>
+              <label className="flex items-center gap-2 text-sm cursor-pointer">
+                <input type="checkbox" checked={editing.pinned} onChange={(e) => setEditing({ ...editing, pinned: e.target.checked })} className="w-4 h-4 accent-[var(--color-amber)]" />
+                <Pin size={13} /> Fixar no topo
+              </label>
+            </div>
+            <div className="sm:col-span-2">
+              <ImageUpload value={editing.image} onChange={(v) => setEditing({ ...editing, image: v })} label="Imagem (opcional)" />
+            </div>
+          </div>
+
+          <div className="flex gap-2 pt-2">
+            <button onClick={() => save(editing)} className="inline-flex items-center gap-2 min-h-[44px] px-5 rounded-lg bg-[var(--color-amber)] text-black font-bold">
+              <Save size={16} /> Salvar
+            </button>
+            <button onClick={() => setEditing(null)} className="min-h-[44px] px-5 rounded-lg border border-[var(--color-line)] hover:border-[var(--color-amber)]">
+              Cancelar
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div className="space-y-3">
+        {novidades.length === 0 && (
+          <p className="text-[var(--color-text-muted)] text-sm">Nenhuma novidade cadastrada.</p>
+        )}
+        {novidades.map((n) => {
+          const expired = n.expiresAt && new Date(n.expiresAt) < new Date();
+          return (
+            <div
+              key={n.id}
+              className={`p-4 rounded-xl bg-[var(--color-surface)] border transition-colors ${expired ? "border-red-500/20 opacity-60" : "border-[var(--color-line)]"}`}
+            >
+              <div className="flex items-start gap-3">
+                <div className="flex flex-col gap-1.5 shrink-0 mt-0.5">
+                  {/* Toggle ativo */}
+                  <input
+                    type="checkbox"
+                    checked={n.active}
+                    onChange={() => toggle(n.id, "active")}
+                    className="w-4 h-4 accent-[var(--color-amber)]"
+                    aria-label="Ativo"
+                    title="Ativo"
+                  />
+                  {/* Toggle fixado */}
+                  <button
+                    onClick={() => toggle(n.id, "pinned")}
+                    aria-label="Fixar"
+                    title={n.pinned ? "Fixado" : "Não fixado"}
+                    className={`w-4 h-4 flex items-center justify-center transition-colors ${n.pinned ? "text-[var(--color-amber)]" : "text-[var(--color-text-dim)]"}`}
+                  >
+                    <Pin size={13} />
+                  </button>
+                </div>
+
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1 flex-wrap">
+                    <span className="font-mono text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-[var(--color-amber)]/10 text-[var(--color-amber)]">
+                      {n.type}
+                    </span>
+                    {expired && <span className="font-mono text-[10px] text-red-400">Expirado</span>}
+                    {n.expiresAt && !expired && (
+                      <span className="font-mono text-[10px] text-[var(--color-text-dim)]">
+                        até {new Date(n.expiresAt).toLocaleDateString("pt-BR")}
+                      </span>
+                    )}
+                  </div>
+                  <div className="font-display font-semibold leading-tight">{n.title}</div>
+                  <p className="text-sm text-[var(--color-text-muted)] line-clamp-1 mt-0.5">{n.body}</p>
+                </div>
+
+                <div className="flex gap-1 shrink-0">
+                  <button onClick={() => setEditing(n)} aria-label="Editar" className="w-9 h-9 grid place-items-center rounded-lg border border-[var(--color-line)] hover:border-[var(--color-amber)]">
+                    <Edit3 size={14} />
+                  </button>
+                  <button onClick={() => remove(n.id)} aria-label="Remover" className="w-9 h-9 grid place-items-center rounded-lg border border-[var(--color-line)] hover:border-red-500 hover:text-red-400">
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function SiteTab() {
   const state = useStore();
   const update = (patch) => store.set({ ...state, site: { ...state.site, ...patch } });
@@ -402,6 +585,9 @@ function SiteTab() {
   );
 }
 
+// Componente raiz do painel administrativo.
+// Autenticação simples por senha — salva na sessionStorage (limpa ao fechar a aba).
+// Para trocar a senha, defina VITE_ADMIN_PASS no arquivo .env.
 function Admin() {
   const [authed, setAuthed] = useState(() => sessionStorage.getItem("insight_admin") === "1");
   const [pwd, setPwd] = useState("");
@@ -411,6 +597,7 @@ function Admin() {
 
   const submit = (e) => {
     e.preventDefault();
+    // Senha padrão "insight2017" usada apenas em dev — sempre defina VITE_ADMIN_PASS em produção.
     const expected = import.meta.env.VITE_ADMIN_PASS || "insight2017";
     if (pwd === expected) {
       sessionStorage.setItem("insight_admin", "1");
@@ -439,15 +626,18 @@ function Admin() {
   }
 
   const counts = {
-    avisos: state.announcements.filter((a) => a.active).length,
-    projetos: state.projects.length,
-    hero: (state.heroSlides || []).length,
-    servicos: state.services.length,
-    site: 0,
+    avisos:    state.announcements.filter((a) => a.active).length,
+    projetos:  state.projects.length,
+    novidades: (state.novidades || []).filter((n) => n.active).length,
+    hero:      (state.heroSlides || []).length,
+    servicos:  state.services.length,
+    site:      0,
   };
 
   const [toast, setToast] = useState({ visible: false, msg: "" });
 
+  // Toast de confirmação: aparece 3s toda vez que o store salva algo.
+  // Isso cobre QUALQUER mudança — não precisa avisar em cada botão "Salvar".
   useEffect(() => {
     let timeout;
     const handler = () => {
@@ -526,11 +716,12 @@ function Admin() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
           >
-            {tab === "avisos" && <AvisosTab />}
-            {tab === "projetos" && <ProjetosTab />}
-            {tab === "hero" && <HeroTab />}
-            {tab === "servicos" && <ServicosTab />}
-            {tab === "site" && <SiteTab />}
+            {tab === "avisos"    && <AvisosTab />}
+            {tab === "projetos"  && <ProjetosTab />}
+            {tab === "novidades" && <NovidadesTab />}
+            {tab === "hero"      && <HeroTab />}
+            {tab === "servicos"  && <ServicosTab />}
+            {tab === "site"      && <SiteTab />}
           </motion.div>
         </main>
       </div>

@@ -4,8 +4,11 @@ import { ArrowUpRight, TrendingUp, ChevronLeft, ChevronRight, Pause, Play } from
 import { useStore } from "../../../lib/store";
 import { fadeUp, stagger } from "../../../lib/motion";
 
+// Carrossel de projetos com filtro por tipo, autoplay e modal de detalhes.
+// Os projetos vêm do store (admin) — para adicionar, use o painel /admin.
 function PortfolioSection() {
   const { projects } = useStore();
+  // Gera os botões de filtro dinamicamente a partir dos tipos cadastrados.
   const types = useMemo(
     () => ["Todos", ...Array.from(new Set(projects.map((p) => p.type)))],
     [projects]
@@ -15,12 +18,14 @@ function PortfolioSection() {
 
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
-  const [dir, setDir] = useState(1);
+  const [dir, setDir] = useState(1); // 1 = próximo, -1 = anterior (controla direção da animação)
   const [modalOpen, setModalOpen] = useState(false);
   const timer = useRef();
 
+  // Volta ao primeiro item ao mudar filtro ou ao adicionar/remover projetos.
   useEffect(() => setIndex(0), [filter, projects.length]);
 
+  // Autoplay: pausa quando o mouse está sobre o carrossel (ux — evita skip acidental).
   useEffect(() => {
     if (paused || filtered.length < 2) return;
     timer.current = setInterval(() => {
@@ -98,6 +103,7 @@ function PortfolioSection() {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: dir * -60 }}
                   transition={{ duration: 0.45, ease: [0.22, 0.61, 0.36, 1] }}
+                  // Swipe touch: arrastar >80px para lado muda o slide
                   drag="x"
                   dragConstraints={{ left: 0, right: 0 }}
                   dragElastic={0.2}

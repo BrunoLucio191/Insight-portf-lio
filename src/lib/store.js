@@ -1,8 +1,15 @@
+// Gerenciamento de estado global do site.
+// Usa localStorage como banco de dados simples — sem backend, sem Redux.
+// Qualquer alteração dispara o evento "insight:store", que sincroniza
+// todos os componentes abertos (inclusive outras abas via evento "storage").
 import { useEffect, useState } from "react";
 import { PORTFOLIO as SEED_PORTFOLIO, SERVICES as SEED_SERVICES } from "./data";
 
+// Chave do localStorage — mudar aqui reseta todos os dados salvos dos usuários.
 const KEY = "insight_site_v1";
 
+// Dados padrão do site — usados quando localStorage está vazio ou corrompido.
+// Para alterar o conteúdo inicial, edite aqui (projetos, serviços, hero, etc.).
 const SEED = {
   announcements: [
     {
@@ -38,6 +45,32 @@ const SEED = {
       "Projetos elétricos, automação e eficiência energética com a qualidade técnica da UFMA e o preço justo de uma empresa júnior.",
     heroBadge: "Empresa Júnior · UFMA · desde 2017",
   },
+  novidades: [
+    {
+      id: "nv1",
+      type: "Novidade",
+      title: "Prêmio MAJU 2025",
+      body: "A Insight foi premiada no MAJU 2025 como destaque em engenharia júnior. Obrigado a todos os clientes e parceiros!",
+      image: "",
+      cta: { label: "Saiba mais", href: "#contato" },
+      active: true,
+      pinned: true,
+      expiresAt: null,
+      createdAt: Date.now(),
+    },
+    {
+      id: "nv2",
+      type: "Campanha",
+      title: "Orçamentos abertos — 2º semestre",
+      body: "Estamos aceitando novos projetos elétricos, laudos e automação para o 2º semestre de 2025.",
+      image: "",
+      cta: { label: "Solicitar orçamento", href: "#contato" },
+      active: true,
+      pinned: false,
+      expiresAt: null,
+      createdAt: Date.now(),
+    },
+  ],
   heroSlides: [
     {
       id: "h1",
@@ -57,6 +90,8 @@ const SEED = {
   ],
 };
 
+// Lê o estado do localStorage, mesclando com SEED para garantir que
+// campos novos adicionados ao código apareçam mesmo em dados antigos.
 function read() {
   try {
     const raw = localStorage.getItem(KEY);
@@ -67,6 +102,8 @@ function read() {
   }
 }
 
+// Salva o estado e notifica todos os listeners.
+// O evento "insight:store" é o mecanismo que faz os componentes re-renderizarem.
 function write(state) {
   localStorage.setItem(KEY, JSON.stringify(state));
   window.dispatchEvent(new Event("insight:store"));
@@ -81,6 +118,8 @@ export const store = {
   },
 };
 
+// Hook React que mantém qualquer componente sincronizado com o store.
+// Escuta mudanças desta aba ("insight:store") e de outras abas ("storage").
 export function useStore() {
   const [state, setState] = useState(read);
   useEffect(() => {
@@ -95,6 +134,7 @@ export function useStore() {
   return state;
 }
 
+// Gera um ID curto aleatório para novos itens (avisos, projetos, slides).
 export function uid() {
   return Math.random().toString(36).slice(2, 9);
 }

@@ -2,12 +2,16 @@ import { useState } from "react";
 import { Megaphone, X } from "lucide-react";
 import { useStore } from "../lib/store";
 
+// Barra de aviso no topo da página — aparece somente se houver avisos ativos.
+// O usuário pode fechar cada aviso; o descarte fica salvo na sessão (não persiste
+// entre visitas, intencionalmente — para o aviso voltar na próxima vez).
 function AnnouncementBar() {
   const { announcements } = useStore();
   const active = announcements.filter((a) => a.active);
   const [dismissed, setDismissed] = useState(
     () => JSON.parse(sessionStorage.getItem("insight_dismissed") || "[]")
   );
+  // Mostra apenas o primeiro aviso não descartado — um por vez para não poluir.
   const visible = active.filter((a) => !dismissed.includes(a.id));
   if (!visible.length) return null;
   const a = visible[0];
@@ -18,6 +22,8 @@ function AnnouncementBar() {
     sessionStorage.setItem("insight_dismissed", JSON.stringify(next));
   };
 
+  // Cor da barra muda conforme o tipo do aviso (info / warning / success).
+  // Para adicionar novos tipos, expanda esse objeto e o select no Admin.
   const tone =
     a.level === "warning"
       ? "bg-amber-500/10 border-amber-500/30 text-amber-200"

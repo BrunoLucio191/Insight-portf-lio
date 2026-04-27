@@ -8,6 +8,8 @@ import { SERVICES as BASE_SERVICES } from "../../../lib/data";
 import { fadeUp, stagger } from "../../../lib/motion";
 import { useStore } from "../../../lib/store";
 
+// Mapa de chave de string → componente de ícone.
+// Adicionar novo ícone: importe acima e adicione aqui. A chave é usada no Admin.
 export const ICON_MAP = {
   zap: Zap, clipboard: ClipboardCheck, cpu: Cpu, gauge: Gauge,
   ruler: PencilRuler, sun: Sun, wrench: Wrench, shield: ShieldCheck,
@@ -17,6 +19,8 @@ export const ICON_MAP = {
 function ServiceCard({ s, index, Icon }) {
   const cardRef = useRef(null);
 
+  // Rastreia o mouse para mover o brilho radial com o cursor dentro do card.
+  // As CSS vars --mouse-x/y são usadas no pseudo-gradiente do hover.
   const handleMouseMove = (e) => {
     if (!cardRef.current) return;
     const rect = cardRef.current.getBoundingClientRect();
@@ -57,6 +61,7 @@ function ServiceCard({ s, index, Icon }) {
           {s.desc}
         </p>
 
+        {/* Detalhe expandido no hover — usa grid-rows 0fr→1fr para animar altura sem JS */}
         <div className="grid grid-rows-[0fr] group-hover:grid-rows-[1fr] transition-[grid-template-rows] duration-500 ease-out">
           <div className="overflow-hidden">
             <p className="text-sm text-[var(--color-text-dim)] pt-4 border-t border-[var(--color-line)] mt-2">
@@ -78,6 +83,8 @@ function ServiceCard({ s, index, Icon }) {
 }
 
 function ServicesSection() {
+  // Prioriza serviços do admin (localStorage); cai no data.js como fallback.
+  // Isso garante que o site funciona mesmo sem nenhuma edição no admin.
   const { services: stored } = useStore();
   const SERVICES = (stored && stored.length ? stored : BASE_SERVICES.map((s, i) => ({
     title: s.title, desc: s.desc, detail: s.detail,

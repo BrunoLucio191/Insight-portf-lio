@@ -4,6 +4,7 @@ import AboutSection from "./AboutSection/AboutSection";
 import ServicesSection from "./ServicesSection/ServicesSection";
 import ProcessSection from "./ProcessSection/ProcessSection";
 import PortfolioSection from "./PortfolioSection/PortfolioSection";
+import NovidadesSection from "./NovidadesSection/NovidadesSection";
 import TestimonialsSection from "./TestimonialsSection/TestimonialsSection";
 import FAQSection from "./FAQSection/FAQSection";
 import ContactSection from "./ContactSection/ContactSection";
@@ -28,6 +29,7 @@ function HomePage() {
         <ServicesSection />
         <ProcessSection />
         <PortfolioSection />
+        <NovidadesSection />
         <TestimonialsSection />
         <FAQSection />
         <ContactSection />
