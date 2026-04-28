@@ -593,6 +593,7 @@ function Admin() {
   const [pwd, setPwd] = useState("");
   const [err, setErr] = useState("");
   const [tab, setTab] = useState("avisos");
+  const [toast, setToast] = useState({ visible: false, msg: "" });
   const state = useStore();
 
   const submit = (e) => {
@@ -604,6 +605,22 @@ function Admin() {
       setAuthed(true); setErr("");
     } else setErr("Senha incorreta.");
   };
+
+  // Toast de confirmação: aparece 3s toda vez que o store salva algo.
+  // Isso cobre QUALQUER mudança — não precisa avisar em cada botão "Salvar".
+  useEffect(() => {
+    let timeout;
+    const handler = () => {
+      setToast({ visible: true, msg: "Alterações salvas" });
+      clearTimeout(timeout);
+      timeout = setTimeout(() => setToast({ visible: false, msg: "" }), 3000);
+    };
+    window.addEventListener("insight:store", handler);
+    return () => {
+      window.removeEventListener("insight:store", handler);
+      clearTimeout(timeout);
+    };
+  }, []);
 
   if (!authed) {
     return (
@@ -633,24 +650,6 @@ function Admin() {
     servicos:  state.services.length,
     site:      0,
   };
-
-  const [toast, setToast] = useState({ visible: false, msg: "" });
-
-  // Toast de confirmação: aparece 3s toda vez que o store salva algo.
-  // Isso cobre QUALQUER mudança — não precisa avisar em cada botão "Salvar".
-  useEffect(() => {
-    let timeout;
-    const handler = () => {
-      setToast({ visible: true, msg: "Alterações salvas" });
-      clearTimeout(timeout);
-      timeout = setTimeout(() => setToast({ visible: false, msg: "" }), 3000);
-    };
-    window.addEventListener("insight:store", handler);
-    return () => {
-      window.removeEventListener("insight:store", handler);
-      clearTimeout(timeout);
-    };
-  }, []);
 
   return (
     <div className="min-h-screen bg-[var(--color-bg)]">
