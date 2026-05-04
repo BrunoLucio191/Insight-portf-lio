@@ -25,11 +25,22 @@ function Header() {
       }`}
     >
       <div className="mx-auto max-w-7xl px-5 sm:px-8 h-16 sm:h-20 flex items-center justify-between">
-        <a href="#inicio" onClick={close} className="flex items-center gap-2 shrink-0">
-          <img src={logo} alt="Insight Engenharia Júnior" className="h-9 sm:h-10 w-auto" />
+        <a
+          href="#inicio"
+          onClick={close}
+          className="flex items-center gap-2 shrink-0"
+        >
+          <img
+            src={logo}
+            alt="Insight Engenharia Júnior"
+            className="h-9 sm:h-10 w-auto"
+          />
         </a>
 
-        <nav className="hidden lg:flex items-center gap-8" aria-label="Navegação principal">
+        <nav
+          className="hidden lg:flex items-center gap-8"
+          aria-label="Navegação principal"
+        >
           {NAV.filter((n) => n.label !== "Contato").map((n) => (
             <a
               key={n.href}
@@ -77,7 +88,10 @@ function Header() {
             transition={{ duration: 0.2 }}
             className="lg:hidden border-t border-[var(--color-line)] bg-black/95 backdrop-blur-md"
           >
-            <nav className="px-5 py-6 flex flex-col gap-1" aria-label="Menu mobile">
+            <nav
+              className="px-5 py-6 flex flex-col gap-1"
+              aria-label="Menu mobile"
+            >
               {NAV.map((n) => (
                 <a
                   key={n.href}

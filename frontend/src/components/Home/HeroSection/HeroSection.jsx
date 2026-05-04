@@ -16,8 +16,18 @@ function AnimatedGrid() {
       preserveAspectRatio="xMidYMid slice"
     >
       <defs>
-        <pattern id="hero-grid" width="56" height="56" patternUnits="userSpaceOnUse">
-          <path d="M 56 0 L 0 0 0 56" fill="none" stroke="rgba(255,201,31,0.35)" strokeWidth="0.6" />
+        <pattern
+          id="hero-grid"
+          width="56"
+          height="56"
+          patternUnits="userSpaceOnUse"
+        >
+          <path
+            d="M 56 0 L 0 0 0 56"
+            fill="none"
+            stroke="rgba(255,201,31,0.35)"
+            strokeWidth="0.6"
+          />
         </pattern>
         <radialGradient id="hero-fade" cx="50%" cy="40%" r="60%">
           <stop offset="0%" stopColor="white" stopOpacity="1" />
@@ -27,7 +37,12 @@ function AnimatedGrid() {
           <rect width="100%" height="100%" fill="url(#hero-fade)" />
         </mask>
       </defs>
-      <rect width="100%" height="100%" fill="url(#hero-grid)" mask="url(#hero-mask)" />
+      <rect
+        width="100%"
+        height="100%"
+        fill="url(#hero-grid)"
+        mask="url(#hero-mask)"
+      />
     </svg>
   );
 }
@@ -46,10 +61,30 @@ function CircuitLine() {
         strokeWidth="1.5"
         initial={{ pathLength: 0 }}
         animate={{ pathLength: 1 }}
-        transition={{ duration: 2.5, ease: "easeInOut", repeat: Infinity, repeatType: "reverse", repeatDelay: 1 }}
+        transition={{
+          duration: 2.5,
+          ease: "easeInOut",
+          repeat: Infinity,
+          repeatType: "reverse",
+          repeatDelay: 1,
+        }}
       />
-      <motion.circle cx="240" cy="260" r="4" fill="#ffc91f" animate={{ opacity: [0.3, 1, 0.3] }} transition={{ duration: 2, repeat: Infinity }} />
-      <motion.circle cx="400" cy="300" r="4" fill="#ffc91f" animate={{ opacity: [0.3, 1, 0.3] }} transition={{ duration: 2, delay: 0.5, repeat: Infinity }} />
+      <motion.circle
+        cx="240"
+        cy="260"
+        r="4"
+        fill="#ffc91f"
+        animate={{ opacity: [0.3, 1, 0.3] }}
+        transition={{ duration: 2, repeat: Infinity }}
+      />
+      <motion.circle
+        cx="400"
+        cy="300"
+        r="4"
+        fill="#ffc91f"
+        animate={{ opacity: [0.3, 1, 0.3] }}
+        transition={{ duration: 2, delay: 0.5, repeat: Infinity }}
+      />
     </svg>
   );
 }
@@ -80,7 +115,11 @@ function HeroSection() {
             variants={fadeUp}
             className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[var(--color-amber)]/30 bg-[var(--color-amber)]/5 mb-6 sm:mb-8"
           >
-            <Zap size={14} className="text-[var(--color-amber)]" aria-hidden="true" />
+            <Zap
+              size={14}
+              className="text-[var(--color-amber)]"
+              aria-hidden="true"
+            />
             <span className="font-mono text-xs tracking-wider uppercase text-[var(--color-amber)]">
               Empresa Júnior · UFMA · desde 2017
             </span>
@@ -111,18 +150,21 @@ function HeroSection() {
                 />
               </svg>
             </span>{" "}
-            júnior
+            .
           </motion.h1>
 
           <motion.p
             variants={fadeUp}
             className="mt-6 sm:mt-8 max-w-2xl text-lg sm:text-xl text-[var(--color-text-muted)] text-pretty leading-relaxed"
           >
-            Projetos elétricos, automação e eficiência energética com a qualidade técnica
-            da UFMA e o preço justo de uma empresa júnior.
+            Projetos elétricos, automação e eficiência energética com a
+            qualidade técnica da UFMA e o preço justo de uma empresa júnior.
           </motion.p>
 
-          <motion.div variants={fadeUp} className="mt-8 sm:mt-10 flex flex-col sm:flex-row gap-3 sm:gap-4">
+          <motion.div
+            variants={fadeUp}
+            className="mt-8 sm:mt-10 flex flex-col sm:flex-row gap-3 sm:gap-4"
+          >
             <a
               href="#contato"
               aria-label="Solicitar orçamento — formulário de contato"
@@ -152,7 +194,9 @@ function HeroSection() {
                 <div className="w-9 h-9 rounded-md bg-[var(--color-amber)]/10 flex items-center justify-center text-[var(--color-amber)] shrink-0">
                   <Icon size={16} aria-hidden="true" />
                 </div>
-                <span className="text-sm text-[var(--color-text)] font-medium">{label}</span>
+                <span className="text-sm text-[var(--color-text)] font-medium">
+                  {label}
+                </span>
               </li>
             ))}
           </motion.ul>
@@ -164,7 +208,9 @@ function HeroSection() {
         aria-label="Rolar para próxima seção"
         className="absolute bottom-6 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-2 text-[var(--color-text-dim)] hover:text-[var(--color-amber)] transition-colors"
       >
-        <span className="font-mono text-[10px] uppercase tracking-[0.3em]">Scroll</span>
+        <span className="font-mono text-[10px] uppercase tracking-[0.3em]">
+          Scroll
+        </span>
         <span className="w-px h-8 bg-gradient-to-b from-[var(--color-amber)] to-transparent" />
       </a>
     </section>
