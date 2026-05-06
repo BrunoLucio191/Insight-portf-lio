@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import { rateLimit } from "express-rate-limit";
 import authRoutes from "./routes/auth.admin.js";
+import logger from "./lib/logger.js";
 
 dotenv.config();
 
@@ -49,5 +50,5 @@ app.use("/api/auth", authRoutes);
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  console.log(`Server rodando na porta ${PORT}`);
+  logger.info({ port: PORT, env: process.env.NODE_ENV }, "Server iniciado");
 });
