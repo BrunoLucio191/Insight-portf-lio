@@ -69,10 +69,30 @@ function CircuitLine() {
         strokeWidth="1.5"
         initial={{ pathLength: 0 }}
         animate={{ pathLength: 1 }}
-        transition={{ duration: 2.5, ease: "easeInOut", repeat: Infinity, repeatType: "reverse", repeatDelay: 1 }}
+        transition={{
+          duration: 2.5,
+          ease: "easeInOut",
+          repeat: Infinity,
+          repeatType: "reverse",
+          repeatDelay: 1,
+        }}
       />
-      <motion.circle cx="240" cy="260" r="4" fill="#ffc91f" animate={{ opacity: [0.3, 1, 0.3] }} transition={{ duration: 2, repeat: Infinity }} />
-      <motion.circle cx="400" cy="300" r="4" fill="#ffc91f" animate={{ opacity: [0.3, 1, 0.3] }} transition={{ duration: 2, delay: 0.5, repeat: Infinity }} />
+      <motion.circle
+        cx="240"
+        cy="260"
+        r="4"
+        fill="#ffc91f"
+        animate={{ opacity: [0.3, 1, 0.3] }}
+        transition={{ duration: 2, repeat: Infinity }}
+      />
+      <motion.circle
+        cx="400"
+        cy="300"
+        r="4"
+        fill="#ffc91f"
+        animate={{ opacity: [0.3, 1, 0.3] }}
+        transition={{ duration: 2, delay: 0.5, repeat: Infinity }}
+      />
     </svg>
   );
 }
@@ -104,7 +124,11 @@ function HeroSection() {
             variants={fadeUp}
             className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[var(--color-amber)]/30 bg-[var(--color-amber)]/5 mb-6 sm:mb-8"
           >
-            <Zap size={14} className="text-[var(--color-amber)]" aria-hidden="true" />
+            <Zap
+              size={14}
+              className="text-[var(--color-amber)]"
+              aria-hidden="true"
+            />
             <span className="font-mono text-xs tracking-wider uppercase text-[var(--color-amber)]">
               {site.heroBadge}
             </span>
@@ -143,7 +167,7 @@ function HeroSection() {
                 />
               </svg>
             </span>{" "}
-            júnior
+            .
           </motion.h1>
 
           <motion.p
@@ -153,7 +177,10 @@ function HeroSection() {
             {site.heroSubtitle}
           </motion.p>
 
-          <motion.div variants={fadeUp} className="mt-8 sm:mt-10 flex flex-col sm:flex-row gap-3 sm:gap-4">
+          <motion.div
+            variants={fadeUp}
+            className="mt-8 sm:mt-10 flex flex-col sm:flex-row gap-3 sm:gap-4"
+          >
             <a
               href="#contato"
               aria-label="Solicitar orçamento — formulário de contato"
@@ -183,7 +210,9 @@ function HeroSection() {
                 <div className="w-9 h-9 rounded-md bg-[var(--color-amber)]/10 flex items-center justify-center text-[var(--color-amber)] shrink-0">
                   <Icon size={16} aria-hidden="true" />
                 </div>
-                <span className="text-sm text-[var(--color-text)] font-medium">{label}</span>
+                <span className="text-sm text-[var(--color-text)] font-medium">
+                  {label}
+                </span>
               </li>
             ))}
           </motion.ul>

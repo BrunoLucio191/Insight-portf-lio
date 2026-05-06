@@ -41,7 +41,10 @@ function Header() {
           <img src={logo} alt="Insight Engenharia Júnior" className="h-9 sm:h-10 w-auto select-none group-hover:opacity-90 transition-opacity" />
         </a>
 
-        <nav className="hidden lg:flex items-center gap-8" aria-label="Navegação principal">
+        <nav
+          className="hidden lg:flex items-center gap-8"
+          aria-label="Navegação principal"
+        >
           {NAV.filter((n) => n.label !== "Contato").map((n) => (
             <a
               key={n.href}
