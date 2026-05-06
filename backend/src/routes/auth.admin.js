@@ -36,9 +36,10 @@ const refreshCookieOptions = {
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 dias
 };
 
+// .strict() rejeita qualquer chave extra — bloqueia prototype pollution via body
 const loginSchema = z.object({
   password: z.string().min(1).max(128),
-});
+}).strict();
 
 const issueTokens = (res) => {
   const accessJti = randomUUID();
