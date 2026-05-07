@@ -28,3 +28,6 @@ dist-ssr
 .claude/
 BACKEND_SECURITY_PLAN.md
 *_PLAN.md
+
+CLAUDE.md
+.claude/
