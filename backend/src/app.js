@@ -8,6 +8,9 @@ import compression from "compression";
 import { pinoHttp } from "pino-http";
 import { doubleCsrf } from "csrf-csrf";
 import authRoutes from "./routes/auth.admin.js";
+import uploadRoutes from "./routes/upload.js";
+import novidadesRoutes from "./routes/novidades.js";
+import { avisosRouter, projetosRouter, heroSlidesRouter, servicosRouter, siteMetaRouter } from "./routes/content.js";
 import logger from "./lib/logger.js";
 
 const IS_PROD = process.env.NODE_ENV === "production";
@@ -90,14 +93,22 @@ app.use(doubleCsrfProtection);
 app.use(
   rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: 100,
+    max: IS_PROD ? 200 : 2000,
     standardHeaders: true,
     legacyHeaders: false,
+    skip: () => !IS_PROD,
     message: { error: "Muitas requisições, tente novamente mais tarde." },
   }),
 );
 
 app.use("/api/auth", authRoutes);
+app.use("/api/upload", uploadRoutes);
+app.use("/api/novidades", novidadesRoutes);
+app.use("/api/avisos", avisosRouter);
+app.use("/api/projetos", projetosRouter);
+app.use("/api/hero-slides", heroSlidesRouter);
+app.use("/api/servicos", servicosRouter);
+app.use("/api/site-meta", siteMetaRouter);
 
 app.get("/healthz", (_req, res) => res.json({ status: "ok" }));
 

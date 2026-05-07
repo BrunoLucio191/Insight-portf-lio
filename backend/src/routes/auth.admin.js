@@ -11,15 +11,16 @@ import { tokenStore } from "../lib/tokenStore.js";
 const router = express.Router();
 
 // Rate limit específico para login — 10 tentativas/15min por IP
+const IS_PROD = process.env.NODE_ENV === "production";
+
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 10,
+  max: IS_PROD ? 10 : 1000,
   message: { error: "Muitas tentativas de login. Tente em 15 minutos." },
   standardHeaders: true,
   legacyHeaders: false,
+  skip: () => !IS_PROD,
 });
-
-const IS_PROD = process.env.NODE_ENV === "production";
 
 const accessCookieOptions = {
   httpOnly: true,
