@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local tooling / planning
+.mcp.json
+.claude/
+BACKEND_SECURITY_PLAN.md
+*_PLAN.md
