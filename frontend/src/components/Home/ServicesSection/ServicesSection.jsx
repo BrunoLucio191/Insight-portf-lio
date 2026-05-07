@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 import { SERVICES as BASE_SERVICES } from "../../../lib/data";
 import { fadeUp, stagger } from "../../../lib/motion";
-import { useStore } from "../../../lib/store";
+import { useServicos } from "../../../lib/contentHooks";
 
 // Mapa de chave de string → componente de ícone.
 // Adicionar novo ícone: importe acima e adicione aqui. A chave é usada no Admin.
@@ -85,7 +85,7 @@ function ServiceCard({ s, index, Icon }) {
 function ServicesSection() {
   // Prioriza serviços do admin (localStorage); cai no data.js como fallback.
   // Isso garante que o site funciona mesmo sem nenhuma edição no admin.
-  const { services: stored } = useStore();
+  const { items: stored } = useServicos();
   const SERVICES = (stored && stored.length ? stored : BASE_SERVICES.map((s, i) => ({
     title: s.title, desc: s.desc, detail: s.detail,
     iconKey: ["zap", "clipboard", "cpu", "gauge", "ruler", "sun"][i] || "zap",

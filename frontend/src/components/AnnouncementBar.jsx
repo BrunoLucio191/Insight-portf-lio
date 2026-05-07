@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { Megaphone, X } from "lucide-react";
-import { useStore } from "../lib/store";
+import { useAvisos } from "../lib/contentHooks";
 
 // Barra de aviso no topo da página — aparece somente se houver avisos ativos.
 // O usuário pode fechar cada aviso; o descarte fica salvo na sessão (não persiste
 // entre visitas, intencionalmente — para o aviso voltar na próxima vez).
 function AnnouncementBar() {
-  const { announcements } = useStore();
-  const active = announcements.filter((a) => a.active);
+  const { items: announcements } = useAvisos();
+  const active = (announcements || []).filter((a) => a.active);
   const [dismissed, setDismissed] = useState(
     () => JSON.parse(sessionStorage.getItem("insight_dismissed") || "[]")
   );

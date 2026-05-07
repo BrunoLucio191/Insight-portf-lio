@@ -1,34 +1,22 @@
 import { useState } from "react";
 import { Lock } from "lucide-react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import api from "../../lib/api";
 
 function Admin({ setUser }) {
-  const [form, setForm] = useState(null);
-  const [error, setError] = useState('');
+  const [form, setForm] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
-  
-  //handleSubmit simples que envia a senha para o back
-  //caso a senha seja a certa o back gera um token e salva eles nos cookies
-  //do navegador, não é possivel acessar esse token por codigo
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
-      const res = await axios.post(
-        "http://localhost:3000/api/auth/admin",
-        form,
-      );
-      //se a resposta for sucedidada o user obtem um token e consegue logar
+      const res = await api.post("/api/auth/admin", { password: form });
       setUser(res.data);
-      //joga o user direto para o painel de controle
-      navigate('/painel');
-    } catch (err) {
+      navigate("/painel");
+    } catch {
       setUser(null);
-      //State pra printar mensagem de erro
-      setError("Senha inválida"); 
-      console.log(err);
+      setError("Senha inválida");
     }
   };
 

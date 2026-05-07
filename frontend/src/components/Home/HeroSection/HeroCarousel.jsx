@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useStore } from "../../../lib/store";
+import { useHeroSlides } from "../../../lib/contentHooks";
+import { useResolvedSrc } from "../../SignedImg";
 
 // Carrossel de imagens da hero — avança automaticamente a cada 4,5s.
 // Os slides são gerenciados pelo admin (aba "Hero Slides").
 // Se houver apenas 1 slide, o autoplay é desativado.
 function HeroCarousel() {
-  const { heroSlides } = useStore();
+  const { items: slides } = useHeroSlides();
   const [i, setI] = useState(0);
-  const slides = heroSlides || [];
 
   // Autoplay: reinicia o timer quando o usuário troca manualmente o slide (dep: i).
   useEffect(() => {
@@ -16,6 +16,8 @@ function HeroCarousel() {
     const t = setInterval(() => setI((p) => (p + 1) % slides.length), 4500);
     return () => clearInterval(t);
   }, [slides.length, i]);
+
+  const resolvedSrc = useResolvedSrc(slides[i]?.image);
 
   if (!slides.length) return null;
 
@@ -32,7 +34,7 @@ function HeroCarousel() {
         >
           {/* Ken Burns: imagem começa levemente ampliada e cresce durante o slide */}
           <motion.img
-            src={slides[i].image}
+            src={resolvedSrc}
             alt={slides[i].caption || "Slide"}
             initial={{ scale: 1.05 }}
             animate={{ scale: 1.15 }}

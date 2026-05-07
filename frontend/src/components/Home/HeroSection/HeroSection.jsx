@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Zap, ShieldCheck, Award, Building2 } from "lucide-react";
 import { fadeUp, stagger } from "../../../lib/motion";
-import { useStore } from "../../../lib/store";
+import { useSiteMeta } from "../../../lib/contentHooks";
 import { STATS } from "../../../lib/data";
 import AnimatedCounter from "../../AnimatedCounter";
 import HeroCarousel from "./HeroCarousel";
@@ -98,7 +98,8 @@ function CircuitLine() {
 }
 
 function HeroSection() {
-  const { site } = useStore();
+  const { data } = useSiteMeta();
+  const site = data || { heroBadge: "", heroTitle: "Insight Engenharia Júnior", heroSubtitle: "" };
   return (
     <section
       id="inicio"

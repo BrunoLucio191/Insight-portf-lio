@@ -3,8 +3,10 @@
 // expirados são ocultados automaticamente sem precisar deletar.
 import { motion } from "framer-motion";
 import { ArrowRight, Pin, Calendar } from "lucide-react";
-import { useStore } from "../../../lib/store";
+import { useNovidades } from "../../../lib/useNovidades";
 import { fadeUp, stagger } from "../../../lib/motion";
+import SignedImg from "../../SignedImg";
+import VideoEmbed from "../../VideoEmbed";
 
 // Cor do badge por tipo de item.
 const TYPE_COLOR = {
@@ -25,16 +27,19 @@ function NovidadeCard({ item }) {
       variants={fadeUp}
       className="group relative flex flex-col rounded-2xl bg-[var(--color-surface)] border border-[var(--color-line)] hover:border-[var(--color-amber)]/40 transition-all duration-300 hover:shadow-[var(--shadow-elevated)] overflow-hidden"
     >
-      {/* Imagem opcional no topo do card */}
-      {item.image && (
+      {item.videoUrl ? (
+        <div className="shrink-0">
+          <VideoEmbed url={item.videoUrl} title={item.title} className="rounded-none" />
+        </div>
+      ) : item.image ? (
         <div className="h-44 overflow-hidden shrink-0">
-          <img
+          <SignedImg
             src={item.image}
             alt={item.title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
         </div>
-      )}
+      ) : null}
 
       <div className="flex flex-col flex-1 p-6 sm:p-7">
         {/* Badges: tipo + pin */}
@@ -83,7 +88,7 @@ function NovidadeCard({ item }) {
 }
 
 function NovidadesSection() {
-  const { novidades = [] } = useStore();
+  const { items: novidades } = useNovidades();
 
   // Pinned no topo, depois por data de criação (mais recente primeiro).
   const sorted = [...novidades].sort((a, b) => {

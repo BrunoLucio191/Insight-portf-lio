@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowUpRight, TrendingUp, ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
-import { useStore } from "../../../lib/store";
+import { useProjetos } from "../../../lib/contentHooks";
 import { fadeUp, stagger } from "../../../lib/motion";
+import SignedImg from "../../SignedImg";
 
 // Carrossel de projetos com filtro por tipo, autoplay e modal de detalhes.
 // Os projetos vêm do store (admin) — para adicionar, use o painel /admin.
 function PortfolioSection() {
-  const { projects } = useStore();
+  const { items: projects } = useProjetos();
   // Gera os botões de filtro dinamicamente a partir dos tipos cadastrados.
   const types = useMemo(
     () => ["Todos", ...Array.from(new Set(projects.map((p) => p.type)))],
@@ -122,7 +123,7 @@ function PortfolioSection() {
                     className="relative h-56 md:h-full bg-[var(--color-bg)] overflow-hidden"
                   >
                     {current.image ? (
-                      <img src={current.image} alt={current.title} className="w-full h-full object-cover" />
+                      <SignedImg src={current.image} alt={current.title} className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full grid place-items-center bg-noise">
                         <span className="font-mono text-6xl text-[var(--color-amber)]/20 font-bold">
