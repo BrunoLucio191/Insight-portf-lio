@@ -25,9 +25,7 @@ dist-ssr
 
 # Local tooling / planning
 .mcp.json
-.claude/
 BACKEND_SECURITY_PLAN.md
 *_PLAN.md
-
-CLAUDE.md
-.claude/
+*.md.local
+.local/
