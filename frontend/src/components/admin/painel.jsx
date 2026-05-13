@@ -3,15 +3,22 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   LogOut, Megaphone, FolderKanban, Wrench, Settings, Plus, Trash2, Save,
   Edit3, ExternalLink, Check, Image as ImageIcon, Upload, ImagePlus,
-  ArrowUp, ArrowDown, Newspaper, Pin, Video,
+  ArrowUp, ArrowDown, Newspaper, Pin, Video, Inbox,
 } from "lucide-react";
+// Aba "Mensagens" — recebe formulário público, permite responder/excluir
+import MensagensTab from "./MensagensTab";
 import { useNavigate } from "react-router-dom";
 import api, { uploadImage } from "../../lib/api";
 import { useNovidades } from "../../lib/useNovidades";
 import { useAvisos, useProjetos, useHeroSlides, useServicos, useSiteMeta } from "../../lib/contentHooks";
 import SignedImg from "../SignedImg";
 
+// Ordem das abas do painel. "Mensagens" fica em primeiro porque é o que
+// o admin mais consulta. Para adicionar uma aba nova: crie o componente,
+// importe, adicione um item aqui e um `{tab === "id" && <Componente />}`
+// no render lá embaixo.
 const TABS = [
+  { id: "mensagens", label: "Mensagens", icon: Inbox },
   { id: "avisos", label: "Avisos", icon: Megaphone },
   { id: "novidades", label: "Novidades", icon: Newspaper },
   { id: "projetos", label: "Projetos", icon: FolderKanban },
@@ -640,6 +647,7 @@ function Painel() {
 
         <main className="flex-1 min-w-0 w-full">
           <motion.div key={tab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
+            {tab === "mensagens" && <MensagensTab />}
             {tab === "avisos" && <AvisosTab />}
             {tab === "novidades" && <NovidadesTab />}
             {tab === "projetos" && <ProjetosTab />}

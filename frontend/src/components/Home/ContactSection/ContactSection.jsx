@@ -1,11 +1,15 @@
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { Mail, MessageCircle, Send, CheckCircle2, AlertCircle } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Mail, MessageCircle, Send, CheckCircle2, AlertCircle, ChevronDown, Check } from "lucide-react";
 import InstagramIcon from "../../icons/InstagramIcon";
-import { CONTACT } from "../../../lib/data";
+import { CONTACT, SERVICES } from "../../../lib/data";
 import { fadeUp, stagger } from "../../../lib/motion";
+import { mensagensApi } from "../../../lib/api";
 
-const initialForm = { name: "", email: "", company: "", message: "" };
+// Estado inicial do formulário. Para adicionar campos novos:
+// 1) inclua aqui; 2) atualize `validate()`; 3) envie no `submit()`;
+// 4) adicione a coluna na tabela `mensagens_contato` e no schema do backend.
+const initialForm = { name: "", email: "", company: "", service: "", message: "" };
 
 function validate(form) {
   const e = {};
@@ -15,6 +19,118 @@ function validate(form) {
   if (!form.message.trim()) e.message = "Conte um pouco sobre o projeto.";
   else if (form.message.trim().length < 10) e.message = "Mensagem muito curta (mín. 10 caracteres).";
   return e;
+}
+
+// Dropdown customizado para selecionar o serviço.
+// Foi feito à mão (não <select> nativo) para combinar com o tema do site
+// e ter controle total de estilo. Suporta teclado: setas, Enter, Esc.
+function ServiceSelect({ value, onChange, options }) {
+  const [open, setOpen] = useState(false);
+  const [focusIdx, setFocusIdx] = useState(-1);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const onDoc = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    };
+    const onKey = (e) => { if (e.key === "Escape") setOpen(false); };
+    document.addEventListener("mousedown", onDoc);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDoc);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, []);
+
+  const items = [{ title: "" }, ...options];
+  const selected = options.find((o) => o.title === value);
+
+  const onKeyDown = (e) => {
+    if (!open && (e.key === "Enter" || e.key === " " || e.key === "ArrowDown")) {
+      e.preventDefault();
+      setOpen(true);
+      setFocusIdx(items.findIndex((i) => i.title === value));
+      return;
+    }
+    if (!open) return;
+    if (e.key === "ArrowDown") { e.preventDefault(); setFocusIdx((i) => Math.min(items.length - 1, i + 1)); }
+    if (e.key === "ArrowUp") { e.preventDefault(); setFocusIdx((i) => Math.max(0, i - 1)); }
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (focusIdx >= 0) { onChange(items[focusIdx].title); setOpen(false); }
+    }
+  };
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        onKeyDown={onKeyDown}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        className={`w-full h-[56px] pl-4 pr-11 rounded-xl bg-[var(--color-surface)] border text-left flex items-center transition-colors ${
+          open
+            ? "border-[var(--color-amber)] bg-[var(--color-amber)]/5"
+            : "border-[var(--color-line)] hover:border-[var(--color-line-strong)]"
+        }`}
+      >
+        <span className={selected ? "text-[var(--color-text)]" : "text-[var(--color-text-dim)]"}>
+          {selected ? selected.title : "Selecione um serviço (opcional)"}
+        </span>
+        <ChevronDown
+          size={18}
+          aria-hidden="true"
+          className={`absolute right-4 top-1/2 -translate-y-1/2 text-[var(--color-text-dim)] transition-transform ${open ? "rotate-180 text-[var(--color-amber)]" : ""}`}
+        />
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.ul
+            role="listbox"
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.15 }}
+            className="absolute z-30 mt-2 w-full max-h-72 overflow-auto rounded-xl bg-[var(--color-surface)] border border-[var(--color-line)] shadow-[var(--shadow-soft)] py-1.5"
+          >
+            <li
+              role="option"
+              aria-selected={value === ""}
+              onClick={() => { onChange(""); setOpen(false); }}
+              className={`px-4 py-2.5 text-sm cursor-pointer flex items-center justify-between text-[var(--color-text-dim)] hover:bg-[var(--color-amber)]/10 hover:text-[var(--color-amber)] ${focusIdx === 0 ? "bg-[var(--color-amber)]/10 text-[var(--color-amber)]" : ""}`}
+            >
+              Nenhum
+            </li>
+            {options.map((o, i) => {
+              const idx = i + 1;
+              const isSel = value === o.title;
+              return (
+                <li
+                  key={o.title}
+                  role="option"
+                  aria-selected={isSel}
+                  onMouseEnter={() => setFocusIdx(idx)}
+                  onClick={() => { onChange(o.title); setOpen(false); }}
+                  className={`px-4 py-2.5 text-sm cursor-pointer flex items-center justify-between gap-2 transition-colors ${
+                    isSel
+                      ? "bg-[var(--color-amber)]/15 text-[var(--color-amber)]"
+                      : focusIdx === idx
+                      ? "bg-[var(--color-amber)]/10 text-[var(--color-amber)]"
+                      : "text-[var(--color-text)] hover:bg-[var(--color-amber)]/10 hover:text-[var(--color-amber)]"
+                  }`}
+                >
+                  <span>{o.title}</span>
+                  {isSel && <Check size={15} aria-hidden="true" />}
+                </li>
+              );
+            })}
+          </motion.ul>
+        )}
+      </AnimatePresence>
+    </div>
+  );
 }
 
 function ContactSection() {
@@ -36,7 +152,12 @@ function ContactSection() {
     setErrors(validate(form));
   };
 
-  const submit = (e) => {
+  // Envio do formulário:
+  //   1) valida tudo e dá foco no primeiro erro;
+  //   2) POST /api/mensagens (salva no banco — aparece no painel admin);
+  //   3) mostra estado "success" por 4s e limpa o formulário.
+  // Não abrimos WhatsApp aqui — equipe recebe e responde pelo painel/email.
+  const submit = async (e) => {
     e.preventDefault();
     const v = validate(form);
     setErrors(v);
@@ -47,22 +168,27 @@ function ContactSection() {
       return;
     }
     setSubmitState("loading");
-    
+
+    try {
+      await mensagensApi.enviar({
+        nome: form.name,
+        email: form.email,
+        servico: form.service || null,
+        empresa: form.company || null,
+        mensagem: form.message,
+      });
+    } catch (err) {
+      setSubmitState("idle");
+      setErrors({ submit: err.response?.data?.error || "Falha ao enviar. Tente novamente." });
+      return;
+    }
+
+    setSubmitState("success");
     setTimeout(() => {
-      setSubmitState("success");
-      const text =
-        `Olá! Sou ${form.name}` +
-        (form.company ? ` (${form.company})` : "") +
-        `.\nEmail: ${form.email}\n\n${form.message}`;
-      const url = `https://wa.me/${CONTACT.whatsappPrimary}?text=${encodeURIComponent(text)}`;
-      window.open(url, "_blank", "noopener,noreferrer");
-      
-      setTimeout(() => {
-        setSubmitState("idle");
-        setForm(initialForm);
-        setTouched({});
-      }, 4000);
-    }, 1200);
+      setSubmitState("idle");
+      setForm(initialForm);
+      setTouched({});
+    }, 4000);
   };
 
   const fieldClass = (key) =>
@@ -180,7 +306,7 @@ function ContactSection() {
               Solicite um orçamento
             </motion.h3>
             <motion.p variants={fadeUp} className="text-sm text-[var(--color-text-muted)] mb-6">
-              Sem compromisso. Resposta rápida via WhatsApp.
+              Sem compromisso. Retornamos por email em até 1 dia útil.
             </motion.p>
 
             <motion.div variants={fadeUp} className="space-y-4">
@@ -231,6 +357,17 @@ function ContactSection() {
                     <AlertCircle size={12} /> {errors.email}
                   </p>
                 )}
+              </div>
+
+              <div>
+                <span className="block text-[10px] font-mono uppercase tracking-widest text-[var(--color-text-dim)] mb-2 pl-1">
+                  Serviço
+                </span>
+                <ServiceSelect
+                  value={form.service}
+                  onChange={(v) => setForm((f) => ({ ...f, service: v }))}
+                  options={SERVICES}
+                />
               </div>
 
               <div className="relative">
@@ -289,7 +426,7 @@ function ContactSection() {
               >
                 {submitState === "idle" && (
                   <>
-                    Enviar via WhatsApp
+                    Enviar mensagem
                     <Send size={16} aria-hidden="true" />
                   </>
                 )}
@@ -297,13 +434,19 @@ function ContactSection() {
                 {submitState === "success" && (
                   <>
                     <CheckCircle2 size={18} aria-hidden="true" />
-                    Abrindo WhatsApp...
+                    Mensagem enviada!
                   </>
                 )}
               </button>
 
+              {errors.submit && (
+                <p role="alert" className="flex items-center gap-1.5 text-xs text-[var(--color-danger)]">
+                  <AlertCircle size={12} /> {errors.submit}
+                </p>
+              )}
+
               <p className="text-xs text-[var(--color-text-dim)] text-center">
-                Ao enviar, abre uma conversa no WhatsApp da equipe.
+                Sua mensagem chega direto para nossa equipe.
               </p>
             </motion.div>
           </motion.form>

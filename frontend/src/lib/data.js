@@ -166,11 +166,17 @@ export const FAQ = [
   },
 ];
 
+// Itens do menu (desktop e mobile). A ordem aqui define a ordem visual.
+// O `href` precisa bater com o `id` da seção correspondente no HomePage.
+// Para adicionar/remover seções do menu: edite só este array.
 export const NAV = [
   { label: "Início", href: "#inicio" },
   { label: "Sobre", href: "#sobreNos" },
   { label: "Serviços", href: "#servicos" },
   { label: "Processo", href: "#processo" },
   { label: "Portfólio", href: "#portfolio" },
+  { label: "Novidades", href: "#novidades" },
+  { label: "Depoimentos", href: "#depoimentos" },
+  { label: "FAQ", href: "#faq" },
   { label: "Contato", href: "#contato" },
 ];

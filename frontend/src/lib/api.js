@@ -87,4 +87,19 @@ export const novidadesApi = {
   remove: (id) => api.delete(`/api/novidades/${id}`).then((r) => r.data),
 };
 
+// ---------------------------------------------------------------------------
+// Mensagens de contato (formulário público + painel admin)
+//   - enviar:    chamado pelo ContactSection (público, sem login)
+//   - list:      usado pela aba "Mensagens" do painel admin
+//   - responder: grava a resposta e marca como respondida
+//   - remove:    apaga a mensagem do banco
+// ---------------------------------------------------------------------------
+export const mensagensApi = {
+  enviar: (payload) => api.post("/api/mensagens", payload).then((r) => r.data),
+  list: () => api.get("/api/mensagens").then((r) => r.data),
+  responder: (id, resposta) =>
+    api.patch(`/api/mensagens/${id}/responder`, { resposta }).then((r) => r.data),
+  remove: (id) => api.delete(`/api/mensagens/${id}`).then((r) => r.data),
+};
+
 export default api;

@@ -10,6 +10,8 @@ import { doubleCsrf } from "csrf-csrf";
 import authRoutes from "./routes/auth.admin.js";
 import uploadRoutes from "./routes/upload.js";
 import novidadesRoutes from "./routes/novidades.js";
+// Mensagens de contato: formulário público + painel admin (responder/listar)
+import mensagensRoutes from "./routes/mensagens.js";
 import { avisosRouter, projetosRouter, heroSlidesRouter, servicosRouter, siteMetaRouter } from "./routes/content.js";
 import logger from "./lib/logger.js";
 
@@ -104,6 +106,8 @@ app.use(
 app.use("/api/auth", authRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/novidades", novidadesRoutes);
+// /api/mensagens — POST público (envio do formulário) e demais protegidos
+app.use("/api/mensagens", mensagensRoutes);
 app.use("/api/avisos", avisosRouter);
 app.use("/api/projetos", projetosRouter);
 app.use("/api/hero-slides", heroSlidesRouter);

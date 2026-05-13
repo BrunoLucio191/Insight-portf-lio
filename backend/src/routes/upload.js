@@ -42,7 +42,14 @@ const downloadSchema = z.object({
   key: z.string().min(1).max(256).regex(/^images\/[A-Za-z0-9._-]+$/),
 }).strict();
 
-router.post("/sign-download", protect, uploadLimiter, async (req, res) => {
+// IMPORTANTE: rota pública (sem `protect`).
+// As imagens precisam ser servidas para visitantes do site, então qualquer um
+// pode pedir uma URL assinada. Proteções que continuam ativas:
+//   - validação regex da `key` (só aceita `images/<chars>`),
+//   - rate-limit (uploadLimiter),
+//   - CSRF global (não vale para origens externas).
+// Se um dia quiser exigir login, basta colocar `protect` de volta.
+router.post("/sign-download", uploadLimiter, async (req, res) => {
   if (!storageConfigured) {
     return res.status(503).json({ error: "Storage não configurado." });
   }
