@@ -1,0 +1,25 @@
+name: Monitor Supabase da Insight
+
+on:
+  schedule:
+    # 06h17, 12h17 e 18h17 em Fortaleza.
+    - cron: '17 9,15,21 * * *'
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  consulta:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Consultar novidades
+        env:
+          SUPABASE_PUBLISHABLE_KEY: sb_publishable_D4lrSMMgq8-_wq7F9zt7IQ_InfeN9QQ
+        run: |
+          set -euo pipefail
+          curl --silent --show-error --fail --max-time 15 \
+            --retry 2 --retry-delay 2 --retry-max-time 45 \
+            --header "apikey: $SUPABASE_PUBLISHABLE_KEY" \
+            'https://aloznlykunfkfzmoxwxg.supabase.co/rest/v1/novidades?select=id&limit=1' \
+            | jq -e 'type == "array"' >/dev/null
